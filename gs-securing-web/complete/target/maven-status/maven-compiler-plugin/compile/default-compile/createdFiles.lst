@@ -1,0 +1,7 @@
+com\example\securingweb\MvcConfig.class
+com\example\securingweb\User.class
+com\example\securingweb\SecuringWebApplication.class
+com\example\securingweb\CusHandler.class
+com\example\securingweb\UserRepository.class
+com\example\securingweb\UserService.class
+com\example\securingweb\WebSecurityConfig.class
