@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  # ---------- CONFIG SERVER ----------
+  configsvr:
+    image: mongo:6
+    container_name: configsvr
+    command: ["mongod", "--configsvr", "--replSet", "rs-config", "--port", "27019", "--bind_ip_all"]
+    ports:
+      - 27019:27019
+    networks:
+      - mongo-net
+
+  # ---------- SHARD 1 ----------
+  shard1:
+    image: mongo:6
+    container_name: shard1
+    command: ["mongod", "--shardsvr", "--replSet", "rs-shard-1", "--port", "27018", "--bind_ip_all"]
+    ports:
+      - 27018:27018
+    networks:
+      - mongo-net
+
+  # ---------- SHARD 2 ----------
+  shard2:
+    image: mongo:6
+    container_name: shard2
+    command: ["mongod", "--shardsvr", "--replSet", "rs-shard-2", "--port", "27020", "--bind_ip_all"]
+    ports:
+      - 27020:27020
+    networks:
+      - mongo-net
+
+  # ---------- MONGOS ROUTER ----------
+  mongos:
+    image: mongo:6
+    container_name: mongos
+    depends_on:
+      - configsvr
+      - shard1
+      - shard2
+    command: >
+      bash -c "
+      sleep 5 &&
+      mongos --configdb rs-config/configsvr:27019 --bind_ip_all"
+    ports:
+      - 27017:27017
+    networks:
+      - mongo-net
+
+networks:
+  mongo-net:
+    driver: bridge
